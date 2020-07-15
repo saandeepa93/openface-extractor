@@ -29,11 +29,13 @@ docker ps -a
 
 ## **Installation**
 
-Install `pip` packages
+1. Install `pip` packages
 
 ```bash
 pip install -r requirements.txt
 ```
+
+2. Create an `output/dataset` folder in the main repo.
 
 ## **Extract**
 

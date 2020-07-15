@@ -1,0 +1,11 @@
+.DS_Store
+.venv
+.vscode
+
+__pycache__
+
+input/**
+output/**
+temp
+
+!.gitkeep

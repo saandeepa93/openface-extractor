@@ -45,7 +45,7 @@ python main.py extract --config path_to_yaml_config
 ```
 
 ## **Output**
-Create 2 folders for each subject/video called `openface` and `aligned` in the output path. \
+Program creates 2 folders for each subject/video called `openface` and `aligned` in the output path.
 `openface` has the extracted csv files and `aligned` has the cropped and aligned face images.
 Follows the same folder structure as input.
 

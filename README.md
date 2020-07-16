@@ -1,4 +1,5 @@
 # **Extract Openface features for given dataset**
+Extracts openface features like gaze, headpose, lms, AUS etc along with aligned faces [[1](#1)][[2](#2)].
 
 ## **Openface docker installation**
 
@@ -48,5 +49,10 @@ python main.py extract --config path_to_yaml_config
 All the configurations are present in the path `./configs/`. Your dataset folder structures needs to be specified in the config file for the program to extract accordingly. \
 For example, *type*, *ext* are the parameters defining your folder structure. Create your own config file in the same format for any new dataset.
 
+## **References**
+<a id="1">[1]</a>
+T. Baltrusaitis, A. Zadeh, Y. C. Lim and L. Morency, "OpenFace 2.0: Facial Behavior Analysis Toolkit," 2018 13th IEEE International Conference on Automatic Face & Gesture Recognition (FG 2018), Xi'an, 2018, pp. 59-66, doi: 10.1109/FG.2018.00019.
 
+<a id="2">[2]</a>
+https://github.com/TadasBaltrusaitis/OpenFace
 

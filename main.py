@@ -1,7 +1,7 @@
 import click
 
 import modules.util as util
-from modules.extractor import extract_data
+from modules.extractor import extract_data, get_folder
 
 
 @click.command()

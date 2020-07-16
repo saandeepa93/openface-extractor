@@ -4,8 +4,6 @@ paths:
 
 params:
   type: videos
-  subfolders: True
-  fresh_output: True
   ext: avi
 
 docker:

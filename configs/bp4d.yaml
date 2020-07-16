@@ -1,10 +1,10 @@
 paths:
-  input: ./input/DISFA/left_video
-  output: ./output/DISFA/
+  input: ./input/BP4D/
+  output: ./output/BP4D/
 
 params:
-  type: videos
-  ext: ".avi"
+  type: frames
+  ext: .jpg
 
 docker:
   img: openface

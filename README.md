@@ -35,7 +35,7 @@ docker ps -a
 pip install -r requirements.txt
 ```
 
-2. Create an `output/dataset` folder in the main repo.
+2. Create an `output/dataset_name` folder in the main repo.
 
 ## **Extract**
 
@@ -46,7 +46,7 @@ python main.py extract --config path_to_yaml_config
 ## **Configurations**
 
 All the configurations are present in the path `./configs/`. Your dataset folder structures needs to be specified in the config file for the program to extract accordingly. \
-For example, *subfolder*, *type*, *ext* are some of the parameters defining your folder structure. Create your own config file in the same format for any new dataset.
+For example, *type*, *ext* are the parameters defining your folder structure. Create your own config file in the same format for any new dataset.
 
 
 

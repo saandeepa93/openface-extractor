@@ -27,22 +27,30 @@ def extract_data(configs):
   for file in tqdm(os.listdir(input_path)):
     file_inpath = os.path.abspath(os.path.join(input_path, file))
 
-    if os.path.splitext(file_inpath)[-1] != configs['params']['ext']:
+    if os.path.splitext(file_inpath)[-1] == configs['params']['ext']:
       op_file = f"{os.path.splitext(file)[0]}.csv"
+      op_folder = f"{os.path.splitext(file)[0]}_aligned"
       file_opath = os.path.join(output_path, op_file)
+      file_odir = os.path.abspath(os.path.join(file_opath, os.pardir))
+
       copy_to = sh(['docker', 'cp', file_inpath, docker_dst])
       if copy_to != 0:
         print(f"Could not copy the file {file} to docker")
         continue
+
       exec_status = sh(['docker', 'exec', docker_img, cmd, '-f', file])
       if exec_status != 0:
         print(f"Openface could not extract the details for {file}")
         continue
+
       copy_from = sh(['docker', 'cp', f"{docker_dst}/processed/{op_file}", f'{file_opath}'])
+      copy_from_face = sh(['docker', 'cp', f"{docker_dst}/processed/{op_folder}", f"{file_odir}"])
       if copy_from != 0:
         print(f"Could not copy the file {op_file} from docker")
         continue
-
+      if copy_from_face != 0:
+        print(f"Could not copy the file {op_folder} from docker")
+        continue
 
     sh(['docker', 'exec', docker_img, 'rm', '-r', 'processed'])
     sh(['docker', 'exec', docker_img, 'rm', file])

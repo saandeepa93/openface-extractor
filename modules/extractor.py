@@ -15,7 +15,6 @@ def sh(cmd):
 def get_folder(configs):
   dirs = []
   d = configs['paths']['input']
-  num_dirs = configs['params']['subfolders']
   for dir, subdir, files in os.walk(d):
     if not subdir:
       if configs['params']['type'] == 'frames':
@@ -35,7 +34,6 @@ def extract_data(configs):
   cmd = configs['docker']['cmd']
 
   data_type = configs['params']['type']
-  fresh_output = configs['params']['fresh_output']
   docker_dst = f"{docker_img}:{work_dir}"
 
   dir_lst = get_folder(configs)
@@ -53,7 +51,7 @@ def extract_data(configs):
     if not os.path.isdir(output_path_openface):
       os.mkdir(output_path_openface)
 
-    op_file = f"{os.path.splitext(file)[0]}.csv" if data_type == "videos" else f"{os.path.splitext(file)[0]}"
+    op_file = f"{os.path.splitext(file)[0]}.csv"
     op_folder = f"{os.path.splitext(file)[0]}_aligned"
 
     copy_to = sh(['docker', 'cp', file_inpath, docker_dst])

@@ -49,6 +49,12 @@ Program creates 2 folders for each subject/video called `openface` and `aligned`
 `openface` has the extracted csv files and `aligned` has the cropped and aligned face images.
 Follows the same folder structure as input.
 
+## **Testing**
+Run the below command to randomly test any file/videoframe with the extracted landmarks
+```bash
+python main.py test --config path_to_yaml_config
+```
+
 
 ## **Configurations**
 

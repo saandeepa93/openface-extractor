@@ -16,3 +16,10 @@ def get_config(config_path):
   with open(config_path) as file:
     configs = yaml.load(file, Loader = yaml.FullLoader)
   return configs
+
+def get_2d_lms():
+  lms_cols = []
+  for i in ('x', 'y'):
+    for j in range(68):
+      lms_cols.append(i+'_'+str(j))
+  return lms_cols

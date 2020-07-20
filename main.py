@@ -1,7 +1,8 @@
 import click
 
 import modules.util as util
-from modules.extractor import extract_data, get_folder
+from modules.extractor import extract_data
+from modules.test import test_extracts
 
 
 @click.command()
@@ -10,6 +11,13 @@ def extract(config):
   configs = util.get_config(config)
   extract_data(configs)
 
+@click.command()
+@click.option('--config', help = 'path of the config file you want to test')
+def test(config):
+  configs = util.get_config(config)
+  test_extracts(configs)
+
+
 @click.group()
 def main():
   pass
@@ -17,4 +25,5 @@ def main():
 
 if __name__ == '__main__':
   main.add_command(extract)
+  main.add_command(test)
   main()

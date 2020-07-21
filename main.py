@@ -1,7 +1,7 @@
 import click
 
 import modules.util as util
-from modules.extractor import extract_data
+from modules.extractor import run_openface
 from modules.test import test_extracts
 
 
@@ -9,7 +9,8 @@ from modules.test import test_extracts
 @click.option('--config', help= 'path of the config file')
 def extract(config):
   configs = util.get_config(config)
-  extract_data(configs)
+  # extract_data(configs)
+  run_openface(configs)
 
 @click.command()
 @click.option('--config', help = 'path of the config file you want to test')

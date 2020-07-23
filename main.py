@@ -4,13 +4,15 @@ import modules.util as util
 from modules.extractor import run_openface
 from modules.test import test_extracts
 
+from sys import exit as e
+
 
 @click.command()
 @click.option('--config', help= 'path of the config file')
 def extract(config):
+  dataset = config.split('/')[-1].split('.')[0]
   configs = util.get_config(config)
-  # extract_data(configs)
-  run_openface(configs)
+  run_openface(configs, dataset)
 
 @click.command()
 @click.option('--config', help = 'path of the config file you want to test')

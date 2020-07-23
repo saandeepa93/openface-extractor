@@ -3,29 +3,18 @@ import subprocess
 from tqdm import tqdm
 import cv2
 import glob
+import time
+import datetime
 from sys import exit as e
 
 import modules.util as util
+from modules.logger import Logger
+
 
 FNULL = open(os.devnull, 'w')
 def sh(cmd):
   return subprocess.call(cmd, stdout=FNULL, stderr=subprocess.STDOUT)
 
-
-def run_openface(configs):
-  dirs = []
-  d = configs['paths']['input']
-  for dir, subdir, files in os.walk(d):
-    if not subdir:
-      if configs['params']['type'] == 'frames':
-        # dirs.append(dir)
-        extract_data(configs, dir)
-      elif configs['params']['type'] == 'videos':
-        for file in files:
-          if os.path.splitext(file)[-1] == configs['params']['ext']:
-            print(os.path.join(dir, file))
-            extract_data(configs, os.path.join(dir, file))
-            # dirs.append(os.path.join(dir, file))
 
 
 def extract_data(configs, file_inpath):
@@ -41,6 +30,14 @@ def extract_data(configs, file_inpath):
   # file_inpath = get_folder(configs)
 
   file = file_inpath.split('/')[-1]
+  if data_type == "videos":
+    subject = file
+  elif data_type == "frames":
+    subject = file_inpath.split('/')[-2]
+
+  op_file = f"{os.path.splitext(file)[0]}.csv"
+  op_folder = f"{os.path.splitext(file)[0]}_aligned"
+
 
   output_path_main = os.path.abspath(os.path.join(os.path.join(output_path, os.path.relpath(file_inpath, input_path)), os.pardir))
   if not os.path.isdir(output_path_main):
@@ -52,13 +49,11 @@ def extract_data(configs, file_inpath):
   if not os.path.isdir(output_path_openface):
     os.mkdir(output_path_openface)
 
-  op_file = f"{os.path.splitext(file)[0]}.csv"
-  op_folder = f"{os.path.splitext(file)[0]}_aligned"
 
   copy_to = sh(['docker', 'cp', file_inpath, docker_dst])
   if copy_to != 0:
-    print(f"Could not copy the file {file} to docker")
-    return -1
+    msg = f"Could not copy the file {file} to docker"
+    return -1, msg
 
   if data_type == "videos":
     exec_status = sh(['docker', 'exec', docker_img, cmd, '-f', file])
@@ -67,17 +62,56 @@ def extract_data(configs, file_inpath):
   else:
     exec_status = -1
   if exec_status != 0:
-    print(f"Openface could not extract the details for {file}")
-    return -1
+    msg = f"Openface could not extract the details for {file}"
+    return -1, msg
 
   copy_from = sh(['docker', 'cp', f"{docker_dst}/processed/{op_file}", f'{output_path_openface}'])
   copy_from_face = sh(['docker', 'cp', f"{docker_dst}/processed/{op_folder}", f"{output_path_aligned}"])
   if copy_from != 0:
-    print(f"Could not copy the file {op_file} from docker")
-    return -1
+    msg = f"Could not copy the file {op_file} from docker"
+    return -1, msg
   if copy_from_face != 0:
-    print(f"Could not copy the file {op_folder} from docker")
-    return -1
+    msg = f"Could not copy the file {op_folder} from docker"
+    return -1, msg
 
-  sh(['docker', 'exec', docker_img, 'rm', '-r', 'processed'])
-  sh(['docker', 'exec', docker_img, 'rm', file])
+  stat1 = sh(['docker', 'exec', docker_img, 'rm', '-r', 'processed'])
+  if stat1 != 0:
+    print(f"could not remove the processed file in docker")
+
+  stat = sh(['docker', 'exec', docker_img, 'rm', '-r', file])
+  if stat != 0:
+    print(f"could not remove the file {file} in docker")
+
+  return None, None
+
+
+def run_openface(configs, dataset):
+  ts = time.time()
+  st = datetime.datetime.fromtimestamp(ts).strftime('%Y%m%d%H%M%S')
+  d = configs['paths']['input']
+  logger = Logger(f'./logs/{dataset}_success_{st}.txt', f'./logs/{dataset}_failure_{st}.txt')
+  for dir, subdir, files in os.walk(d):
+    if not subdir:
+      if configs['params']['type'] == 'frames':
+        print(f" extracting for Subject {dir.split('/')[-2]} task {dir.split('/')[-1]}...")
+        status, msg = extract_data(configs, dir)
+        if status == -1:
+          logger.log_failure(dir.split('/')[-2], 'frames', dir.split('/')[-1], msg)
+          print("failed!")
+        else:
+          logger.log_success(dir.split('/')[-2], 'frames', dir.split('/')[-1])
+          print("done!")
+      elif configs['params']['type'] == 'videos':
+        for file in files:
+          if os.path.splitext(file)[-1] == configs['params']['ext']:
+            subject = os.path.join(dir, file)
+            print(f"extracting for Subject {subject.split('/')[-1]}....")
+            status, msg = extract_data(configs, subject)
+            if status == -1:
+              logger.log_failure(dir.split('/')[-1], 'videos', msg)
+              print("failed!")
+            else:
+              logger.log_success(dir.split('/')[-1], 'videos')
+              print("done!")
+  print("openface extraction complete!")
+

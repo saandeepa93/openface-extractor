@@ -1,0 +1,12 @@
+paths:
+  input: /home/ubuntu/BP4D/
+  output: ./output/BP4D/
+
+params:
+  type: frames
+  ext: .jpg
+
+docker:
+  img: openface
+  work_dir: /home/openface-build
+  cmd: ./build/bin/FeatureExtraction

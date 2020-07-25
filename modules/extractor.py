@@ -86,6 +86,10 @@ def extract_data(configs, file_inpath):
 
 
 def run_openface(configs, dataset):
+  text_file = open("./logs/bp4d_failure_20200724193802.txt", "r")
+  lines = text_file.readlines()
+  lines = [i.split(':')[3].strip(' ') for i in lines]
+
   ts = time.time()
   st = datetime.datetime.fromtimestamp(ts).strftime('%Y%m%d%H%M%S')
   d = configs['paths']['input']
@@ -93,14 +97,20 @@ def run_openface(configs, dataset):
   for dir, subdir, files in os.walk(d):
     if not subdir:
       if configs['params']['type'] == 'frames':
-        print(f" extracting for Subject {dir.split('/')[-2]} task {dir.split('/')[-1]}...")
-        status, msg = extract_data(configs, dir)
-        if status == -1:
-          logger.log_failure(dir.split('/')[-2], 'frames', dir.split('/')[-1], msg)
-          print("failed!")
+        subject = dir.split('/')[-2]
+        task = dir.split('/')[-1]
+        fname = f"{subject}_{task}"
+        if fname in lines:
+          print(f" extracting for Subject {dir.split('/')[-2]} task {dir.split('/')[-1]}...")
+          status, msg = extract_data(configs, dir)
+          if status == -1:
+            logger.log_failure(dir.split('/')[-2], 'frames', dir.split('/')[-1], msg)
+            print("failed!")
+          else:
+            logger.log_success(dir.split('/')[-2], 'frames', dir.split('/')[-1])
+            print("done!")
         else:
-          logger.log_success(dir.split('/')[-2], 'frames', dir.split('/')[-1])
-          print("done!")
+          continue
       elif configs['params']['type'] == 'videos':
         for file in files:
           if os.path.splitext(file)[-1] == configs['params']['ext']:
